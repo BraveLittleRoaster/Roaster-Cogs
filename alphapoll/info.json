@@ -1,0 +1,10 @@
+{
+    "NAME" : "AlphaPoll",
+    "AUTHOR" : "BraveLittleRoaster",
+    "SHORT" : "Create polls using reactions as the responses, up to the Discord hard limit (currently 20 options).",
+    "DESCRIPTION" : "Fork of ReactPoll. Create polls using reactions as the responses. Supports polls with up to 20 answers, with custom durations.\n\nDependencies: None",
+    "INSTALL_MSG" : "Please make sure your bot has the 'Manage Messages' permission so it can manage emoji reactions on messages.",
+    "REQUIREMENTS" : [],
+    "TAGS" : ["poll", "reaction", "emoji", "react"],
+    "DISABLED" : false
+}
