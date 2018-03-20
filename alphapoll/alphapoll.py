@@ -185,7 +185,7 @@ class NewReactPoll():
         # print("Sleeping for %s" % self.duration)
         await asyncio.sleep(self.duration)
         if self.valid:
-            print("Expiring poll")
+            # print("Expiring poll")
             await self.endPoll(expired=True)
 
     # Override NewPoll methods for starting and stopping polls
@@ -210,7 +210,7 @@ class NewReactPoll():
             # print("Not expired yet")
             self.wait_task.cancel()
         # Need a fresh message object
-        print("Getting fresh message obj")
+        # print("Getting fresh message obj")
         self.message = await self.client.get_message(self.channel, self.message.id)
         msg = "**POLL ENDED!**\n\n{}\n\n".format(self.question)
         for reaction in self.message.reactions:
