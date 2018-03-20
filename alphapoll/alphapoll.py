@@ -21,8 +21,8 @@ class AlphaPoll:
     async def apoll(self, ctx, *text):
         """Starts/stops a reaction poll
         Usage example (time argument is optional)
-        rpoll Is this a poll?;Yes;No;Maybe;t=60
-        rpoll stop"""
+        apoll Is this a poll?;Yes;No;Maybe;t=60
+        apoll stop"""
         message = ctx.message
         channel = message.channel
         server = message.server
@@ -45,7 +45,7 @@ class AlphaPoll:
                 self.poll_sessions.append(p)
                 await p.start()
             else:
-                await self.bot.say("`[p]rpoll question;option1;option2...;t=60`")
+                await self.bot.say("`[p]apoll question;option1;option2...;t=60`")
         else:
             await self.bot.say("A reaction poll is already ongoing in this channel.")
 
