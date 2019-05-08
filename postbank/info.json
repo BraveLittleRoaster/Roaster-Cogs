@@ -1,0 +1,10 @@
+{
+    "NAME" : "PostBank",
+    "AUTHOR" : "BraveLittleRoaster",
+    "SHORT" : "Creates a banking system for users to post artwork/music/whatever and encourages feedback and activity",
+    "DESCRIPTION" : "PostBank is a banking system for Discord servers that want an automated way of enforcing people to engague in a creative community. It discourages shilling by requireing them to give feedback and engague in the community in a positive way before allowing them to post. This prevents new members on large discord servers from popping in and dropping a link to their soundcloud, never to engauge further in the community. Server admins have privledges to change account balances and manage users from within Discord.",
+    "INSTALL_MSG" : "Please consult the README for usesage and commands.",
+    "REQUIREMENTS" : [],
+    "TAGS" : ["bank", "postbank", "react", "anti-shill", "anti-shilling", "community engaguement"],
+    "DISABLED" : false
+}
