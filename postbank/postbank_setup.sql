@@ -1,0 +1,8 @@
+CREATE TABLE
+IF NOT EXISTS postbank (
+  feedbackid INTEGER PRIMARY KEY AUTOINCREMENT,
+  userid TEXT NOT NULL,
+  link TEXT NOT NULL,
+  numreviews INTEGER,
+  reviewers TEXT NOT NULL
+);
