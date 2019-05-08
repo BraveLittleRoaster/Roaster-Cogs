@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import re
-from discord.ext import commands
+#from discord.ext import commands
+from redbot.core import commands
 import sqlite3
 
 
@@ -43,7 +44,7 @@ class InitDb(object):
             print(e)
 
 
-class PostBank:
+class PostBank(commands.Cog):
 
     def __init__(self, bot):
         self.bot = bot
