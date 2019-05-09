@@ -55,7 +55,7 @@ class PostBank(commands.Cog):
 
     def __init__(self, bot):
         # Set the default balance to 1.
-        bank.set_default_balance(1)
+        await bank.set_default_balance(1)
 
         self.bot = bot
         self.feedback_ids = [{'id': 0, 'user': None}]
