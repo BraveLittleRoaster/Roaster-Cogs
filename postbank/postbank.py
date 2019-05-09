@@ -25,12 +25,6 @@ IF NOT EXISTS postbank (
   reviewers TEXT NOT NULL
 );"""
 
-        try:
-            with open(sql_setup, 'r') as f:
-                sql_setup = f.read()
-        except (FileNotFoundError, FileNotFoundError) as e:
-            print(e)
-
         self.db_file = db_file
         conn = self.conn_db(db_file)
 
