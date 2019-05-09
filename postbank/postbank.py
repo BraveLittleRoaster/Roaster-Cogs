@@ -3,9 +3,7 @@ import re
 import os
 from redbot.core import commands, bank
 import sqlite3
-
-# Set the default balance to 1.
-await bank.set_default_balance(1)
+import asyncio
 
 
 class InitDb(object):
@@ -62,6 +60,13 @@ class PostBank(commands.Cog):
         self.db_path = os.path.expanduser('~/.postbank/postbank.db')  # location of the postbank database file.
         self.db = InitDb(self.db_path)  # create the DB if it doesn't exist.
         self.min_length = 140  # Minimum number of characters to be awarded for feedback.
+        self.default_balance(1)
+
+    @staticmethod
+    def default_balance(amount):
+
+        loop = asyncio.get_event_loop()
+        loop.run_until_complete(bank.set_default_balance(amount))
 
     @commands.command(pass_context=True, no_pm=True)
     async def balance(self, ctx):
