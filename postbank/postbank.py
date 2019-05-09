@@ -283,11 +283,15 @@ class PostBank(commands.Cog):
 
         rows = cur.fetchall()
 
-        if rows[0][0] == user.id:
-            await self.bot.send_message(ctx.message.channel,
+        try:
+            if rows[0][0] == user.id:
+                await self.bot.send_message(ctx.message.channel,
                                         "<@{}>: You cannot review your own submissions.".format(user.id))
-            conn.close()
-            return
+                conn.close()
+                return
+        except IndexError as err:
+            await self.bot.delete_message(ctx.message)
+            await ctx.send(f"<@{user.id}> Feedback needs an ID number and a message.")
 
         # Build a list to check against.
         cur.execute('SELECT feedbackid FROM postbank')
