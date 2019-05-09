@@ -2,6 +2,7 @@
 import re
 import os
 from redbot.core import commands, bank
+from redbot.core import Config
 import sqlite3
 
 
@@ -54,17 +55,22 @@ class PostBank(commands.Cog):
 
     def __init__(self, bot):
 
-        bank._DEFAULT_GUILD = {
-            "bank_name": "PostBank",
-            "currency": "credits",
-            "default_balance": 0
-        }
-        bank._DEFAULT_GLOBAL = {
+        _DEFAULT_GLOBAL = {
             "is_global": False,
             "bank_name": "PostBank",
             "currency": "credits",
-            "default_balance": 0,
+            "default_balance": 1,
         }
+
+        _DEFAULT_GUILD = {
+            "bank_name": "PostBank",
+            "currency": "credits",
+            "default_balance": 1
+        }
+
+        self.config = Config.get_conf(self, identifier=384734293238749)
+        self.config.register_global(**_DEFAULT_GLOBAL)
+        self.config.register_global(**_DEFAULT_GUILD)
 
         self.bot = bot
         self.feedback_ids = [{'id': 0, 'user': None}]
