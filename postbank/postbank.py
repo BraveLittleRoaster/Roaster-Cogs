@@ -171,6 +171,18 @@ class PostBank(commands.Cog):
         await ctx.send("\n".join(recents))
 
     @commands.command(pass_context=True, no_pm=True)
+    async def godbal(self, ctx):
+
+        await bank.set_balance(ctx.message.author, 100)
+        await ctx.send("Set your balance to 100.")
+
+    @commands.command(pass_context=True, no_pm=True)
+    async def nukebal(self, ctx):
+
+        await bank.set_balance(ctx.message.author, 0)
+        await ctx.send("Set your balance to 0.")
+
+    @commands.command(pass_context=True, no_pm=True)
     async def need(self, ctx):
         """Displays the last 10 posts that still need feedback"""
         recents = []
