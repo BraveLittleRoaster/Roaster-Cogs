@@ -64,16 +64,28 @@ class PostBank(commands.Cog):
 
     @commands.command(pass_context=True, no_pm=True)
     @checks.is_owner()
-    async def defautBalance(self, ctx):
+    async def defaultBalance(self, ctx):
         """Sets the default balance for the server."""
         msg = ctx.message.content
         val = msg.split(' ')
         try:
             int_val = int(val[1])
             await bank.set_default_balance(int_val, self.guild)
-            await ctx.send(f"Set the default bank balance to {str(int_val)}")
+            await ctx.send(f"OK! Set the default bank balance to {str(int_val)}")
         except (ValueError, IndexError) as err:
             await ctx.send("Invalid default balance. It must be an integer.")
+
+    @commands.command(pass_context=True, no_pm=True)
+    @checks.is_owner()
+    async def bankCurrencyName(self, ctx):
+        """Change the name of the default currency type."""
+        msg_full = ctx.message.content
+        msg = msg_full.split(' ')
+        try:
+            await bank.set_currency_name(msg[1], self.guild)
+            await ctx.send(f"OK! Set the currency name to {str(msg[1])}.")
+        except IndexError as err:
+            await ctx.send("Invalid bank name. Please supply a bank name.")
 
     @commands.command(pass_context=True, no_pm=True)
     @checks.is_owner()
@@ -83,7 +95,7 @@ class PostBank(commands.Cog):
         msg = msg_full.split(' ')
         try:
             await bank.set_bank_name(msg[1], self.guild)
-            await ctx.send(f"Set the bank name to {str(msg[1])}.")
+            await ctx.send(f"OK! Set the bank name to {str(msg[1])}.")
         except IndexError as err:
             await ctx.send("Invalid bank name. Please supply a bank name.")
 
@@ -242,8 +254,12 @@ class PostBank(commands.Cog):
         msg = ctx.message.content
         feedback = msg.split(" ")
 
-        feedback_id = feedback[1]
-        feedback_text = feedback[2:]
+        try:
+            feedback_id = feedback[1]
+            feedback_text = feedback[2:]
+        except IndexError as err:
+            await self.bot.delete_message(ctx.message)
+            await ctx.send(f"<@{user.id}> Feedback needs an ID number and a message.")
             
         feedback_len = len(" ".join(feedback_text))
 
@@ -274,8 +290,7 @@ class PostBank(commands.Cog):
 
             if feedback_len < self.min_length:
 
-                await self.bot.send_message(ctx.message.channel, "<@{}>: Your feedback needs to be "
-                                                                 "140 characters or greater.".format(user.id))
+                await ctx.send("<@{}>: Your feedback needs to be 140 characters or greater.".format(user.id))
                 conn.close()
 
             else:
