@@ -55,13 +55,15 @@ class PostBank(commands.Cog):
 
     def __init__(self, bot):
         # Set the default balance to 1.
-        await bank.set_default_balance(1)
 
         self.bot = bot
         self.feedback_ids = [{'id': 0, 'user': None}]
         self.db_path = os.path.expanduser('~/.postbank/postbank.db')  # location of the postbank database file.
         self.db = InitDb(self.db_path)  # create the DB if it doesn't exist.
         self.min_length = 140  # Minimum number of characters to be awarded for feedback.
+
+    async def _init(self):
+        await bank.set_default_balance(1)
 
     @commands.command(pass_context=True, no_pm=True)
     async def balance(self, ctx):
