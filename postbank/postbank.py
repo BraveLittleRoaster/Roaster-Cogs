@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 import re
 import os
-from redbot.core import commands, bank, checks
+from redbot.core import bank, checks
+from discord.ext import commands
 import sqlite3
 import asyncio
 
