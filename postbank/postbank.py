@@ -1,8 +1,7 @@
 # -*- coding: utf-8 -*-
 import re
 import os
-from redbot.core import commands, bank
-from redbot.core import Config
+from redbot.core import commands, bank, checks
 import sqlite3
 import asyncio
 
@@ -63,13 +62,28 @@ class PostBank(commands.Cog):
         self.min_length = 140  # Minimum number of characters to be awarded for feedback.
         self.guild = self.bot.guilds[0]
 
-        self.bank_setup(0, self.guild)
+    @commands.command(pass_context=True, no_pm=True)
+    @checks.is_owner()
+    async def defautBalance(self, ctx):
+        """Sets the default balance for the server."""
+        msg = ctx.message.content
+        val = msg.split(' ')
+        try:
+            val = int(val[1])
+            await bank.set_default_balance(val, self.guild)
+        except (ValueError, IndexError) as err:
+            await ctx.send("Invalid default balance. It must be an integer.")
 
-    @staticmethod
-    def bank_setup(amount, guild):
-        loop = asyncio.get_event_loop()
-        loop.run_until_complete(bank.set_default_balance(amount, guild))
-        loop.run_until_complete(bank.set_bank_name("PostBank", guild))
+    @commands.command(pass_context=True, no_pm=True)
+    @checks.is_owner()
+    async def bankName(self, ctx):
+        """Sets the name of the bank."""
+        msg_full = ctx.message.content
+        msg = msg_full.split(' ')
+        try:
+            await bank.set_bank_name(msg[1])
+        except IndexError as err:
+            await ctx.send("Invalid bank name. Please supply a bank name.")
 
     @commands.command(pass_context=True, no_pm=True)
     async def balance(self, ctx):
@@ -79,14 +93,7 @@ class PostBank(commands.Cog):
 
         await ctx.send("<@{}>: Your credit balance is: {}".format(user.id, bal))
 
-    @commands.command(pass_context=True, no_pm=True)
-    async def add_balance(self, ctx):
-        user = ctx.message.author
-        bal = await bank.get_balance(user)
-        await bank.set_balance(user, bal + 1)
-        await ctx.send("<@{}>: Your credit balance is: {}".format(user.id, bal+1))
-
-    @commands.command(pass_context=True, no_pm=True)
+    @commands.command(pass_context=True, no_pm=True, name="update")
     async def edit(self, ctx):
         """Allows you to edit your posted link. $edit <id> <link>"""
         user = ctx.message.author
@@ -99,7 +106,7 @@ class PostBank(commands.Cog):
         joined_str = (' '.join(str(x) for x in msg))  # mash this into 1 string
         link = re.search("(?P<url>https?://[^\s]+)", joined_str).group("url")  # Grab only the URL.
         try:
-            rows = curr.execute('SELECT userid FROM postbank WHERE feedbackid = ?;', (feedbackid),)
+            rows = curr.execute('SELECT userid FROM postbank WHERE feedbackid = ?;', (feedbackid,))
             row = rows.fetchone()
 
         except Exception as e:
@@ -111,10 +118,10 @@ class PostBank(commands.Cog):
                 conn.commit()
             except Exception as e:
                 print("Error: {}".format(e))
-            await self.bot.send_message(ctx.message.channel, "{}: Your link for Posting ID [{}] has been updated".format(user, feedbackid))
+            await ctx.send("<@{}>: Your link for Posting ID [{}] has been updated".format(user.id, feedbackid))
 
         else:
-            await self.bot.send_message(ctx.message.channel, "{}: You cannot edit an ID that isn't yours.".format(user))
+            await ctx.send("<@{}>: You cannot edit an ID that isn't yours.".format(user.id))
 
         conn.close()
 
@@ -147,7 +154,7 @@ class PostBank(commands.Cog):
             feedback = "{} -- `{}` -- {} -- <{}>".format(emoji, feedbackid, username, link)
             recents.append(feedback)
 
-        await self.bot.send_message(ctx.message.channel, "\n".join(recents))
+        await ctx.send("\n".join(recents))
 
     @commands.command(pass_context=True, no_pm=True)
     async def need(self, ctx):
@@ -178,7 +185,7 @@ class PostBank(commands.Cog):
             feedback = "{} -- `{}` -- {} -- <{}>".format(emoji, feedbackid, username, link)
             recents.append(feedback)
 
-        await self.bot.send_message(ctx.message.channel, "\n".join(recents))
+        await ctx.send("\n".join(recents))
 
     @commands.command(pass_context=True, no_pm=True)
     async def post(self, ctx):
@@ -222,7 +229,8 @@ class PostBank(commands.Cog):
 
         else:
 
-            await self.bot.send_message(ctx.message.channel, "{}: Your post was removed because you don't have any credit. Give users $feedback to get credit.".format(user.name, bal))
+            await ctx.send("{}: Your post was removed because you don't have any credit. Give users $feedback to get credit.".format(user.name, bal))
+            #await ctx.delete_message(ctx.message)
             await self.bot.delete_message(ctx.message)
 
     @commands.command(pass_context=True, no_pm=True)
@@ -288,7 +296,7 @@ class PostBank(commands.Cog):
                                                                                                      reviewers,
                                                                                                      feedback_id,))
 
-                    await self.bot.send_message(ctx.message.channel, "<@{}>: You've got feedback!".format(op))
+                    await ctx.send("<@{}>: You've got feedback!".format(op))
 
                     bank.deposit_credits(user=user, amount=1)
 
@@ -296,12 +304,11 @@ class PostBank(commands.Cog):
                     conn.close()
 
                 else:
-                    await self.bot.send_message(ctx.message.channel, "<@{}>: You already submitted a"
-                                                                     " review for this ID.".format(user.id))
+                    await ctx.send("<@{}>: You already submitted a review for this ID.".format(user.id))
 
         else:
 
-            await self.bot.send_message(ctx.message.channel, "<@{}>: {} is not a valid feedback ID.".format(user.id,feedback_id))
+            await ctx.send("<@{}>: {} is not a valid feedback ID.".format(user.id, feedback_id))
             conn.close()
 
         conn.close()
