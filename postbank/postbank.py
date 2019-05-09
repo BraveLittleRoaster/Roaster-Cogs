@@ -89,6 +89,13 @@ class PostBank(commands.Cog):
         await ctx.send("<@{}>: Your credit balance is: {}".format(user.id, bal))
 
     @commands.command(pass_context=True, no_pm=True)
+    async def add_balance(self, ctx):
+        user = ctx.message.author
+        bal = await bank.get_balance(user)
+        await bank.set_balance(user, bal + 1)
+        await ctx.send("<@{}>: Your credit balance is: {}".format(user, bal))
+
+    @commands.command(pass_context=True, no_pm=True)
     async def edit(self, ctx):
         """Allows you to edit your posted link. $edit <id> <link>"""
         user = ctx.message.author
