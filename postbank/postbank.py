@@ -2,6 +2,7 @@
 import re
 #from discord.ext import commands
 from redbot.core import commands
+from redbot.core import bank as rb_bank
 import sqlite3
 
 
@@ -49,7 +50,8 @@ class PostBank(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.feedback_ids = [{'id': 0, 'user': None}]
-        self.bank = bot.get_cog('Economy').bank
+        #self.bank = bot.get_cog('Economy').bank
+        self.bank = rb_bank
         self.db_path = './cogs/postbank.db'  # location of the postbank database file.
         self.db_setup = './cogs/postbank_setup.sql'  # location of the sqlite setup file.
         self.db = InitDb(self.db_path, self.db_setup)  # create the DB if it doesn't exist.
