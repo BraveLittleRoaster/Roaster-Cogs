@@ -24,17 +24,10 @@ IF NOT EXISTS postbank (
   numreviews INTEGER,
   reviewers TEXT NOT NULL
 );"""
-
-        self.db_file = db_file
         conn = self.conn_db(db_file)
-
-        if conn is not None:
-            self.create_table(conn, sql_setup)
-            conn.commit()
-            conn.close()
-
-        else:
-            print("Can't connect to database.")
+        self.create_table(conn, sql_setup)
+        conn.commit()
+        conn.close()
 
     def conn_db(self, db_file):
         # Connect to a database
