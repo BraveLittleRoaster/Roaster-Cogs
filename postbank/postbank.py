@@ -29,7 +29,8 @@ IF NOT EXISTS postbank (
             self.create_table(conn, sql_setup)
             conn.commit()
             conn.close()
-
+        else:
+            print(f"Could not connect to database at {db_file}")
 
     def conn_db(self, db_file):
         # Connect to a database
