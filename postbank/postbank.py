@@ -48,8 +48,8 @@ class PostBank(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.feedback_ids = [{'id': 0, 'user': None}]
-        self.db_path = './cogs/postbank.db'  # location of the postbank database file.
-        self.db_setup = './cogs/postbank_setup.sql'  # location of the sqlite setup file.
+        self.db_path = './postbank.db'  # location of the postbank database file.
+        self.db_setup = './postbank_setup.sql'  # location of the sqlite setup file.
         self.db = InitDb(self.db_path, self.db_setup)  # create the DB if it doesn't exist.
         self.min_length = 140  # Minimum number of characters to be awarded for feedback.
 
@@ -57,7 +57,7 @@ class PostBank(commands.Cog):
     async def balance(self, ctx):
         """Gets the credit balance of the user who authors the $balance command, and returns it to the chat."""
         user = ctx.message.author
-        bal = bank.get_balance(user)
+        bal = await bank.get_balance(user)
 
         await self.bot.send_message(ctx.message.channel, "<@{}>: Your credit balance is: {}".format(user.id, bal))
 
