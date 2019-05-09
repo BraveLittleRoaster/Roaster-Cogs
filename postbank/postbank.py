@@ -69,7 +69,7 @@ class PostBank(commands.Cog):
         user = ctx.message.author
         bal = await bank.get_balance(user)
 
-        await ctx.send(ctx.message.channel, "<@{}>: Your credit balance is: {}".format(user.id, bal))
+        await ctx.send("<@{}>: Your credit balance is: {}".format(user.id, bal))
 
     @commands.command(pass_context=True, no_pm=True)
     async def edit(self, ctx):
