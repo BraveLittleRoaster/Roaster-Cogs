@@ -69,8 +69,8 @@ class PostBank(commands.Cog):
         msg = ctx.message.content
         val = msg.split(' ')
         try:
-            val = int(val[1])
-            await bank.set_default_balance(val, self.guild)
+            int_val = int(val[1])
+            await bank.set_default_balance(int_val, self.guild)
         except (ValueError, IndexError) as err:
             await ctx.send("Invalid default balance. It must be an integer.")
 
@@ -81,7 +81,7 @@ class PostBank(commands.Cog):
         msg_full = ctx.message.content
         msg = msg_full.split(' ')
         try:
-            await bank.set_bank_name(msg[1])
+            await bank.set_bank_name(msg[1], self.guild)
         except IndexError as err:
             await ctx.send("Invalid bank name. Please supply a bank name.")
 
