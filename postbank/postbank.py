@@ -1,8 +1,7 @@
 # -*- coding: utf-8 -*-
 import re
 import os
-from redbot.core import bank, checks
-from discord.ext import commands
+from redbot.core import commands, bank, checks
 import sqlite3
 import asyncio
 
@@ -257,8 +256,7 @@ class PostBank(commands.Cog):
         else:
 
             await ctx.send("{}: Your post was removed because you don't have any credit. Give users $feedback to get credit.".format(user.name, bal))
-            #await ctx.delete_message(ctx.message)
-            await self.bot.delete_message(ctx.message)
+            await ctx.message.delete()
 
     @commands.command(pass_context=True, no_pm=True)
     async def feedback(self, ctx):
@@ -271,7 +269,7 @@ class PostBank(commands.Cog):
             feedback_id = feedback[1]
             feedback_text = feedback[2:]
         except IndexError as err:
-            await self.bot.delete_message(ctx.message)
+            await ctx.message.delete()
             await ctx.send(f"<@{user.id}> Feedback needs an ID number and a message.")
             return
             
@@ -291,7 +289,7 @@ class PostBank(commands.Cog):
                 conn.close()
                 return
         except IndexError as err:
-            await self.bot.delete_message(ctx.message)
+            await ctx.message.delete()
             await ctx.send(f"<@{user.id}> Feedback needs an ID number and a message.")
             return
 
