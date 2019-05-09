@@ -25,9 +25,11 @@ IF NOT EXISTS postbank (
   reviewers TEXT NOT NULL
 );"""
         conn = self.conn_db(db_file)
-        self.create_table(conn, sql_setup)
-        conn.commit()
-        conn.close()
+        if conn is not None:
+            self.create_table(conn, sql_setup)
+            conn.commit()
+            conn.close()
+
 
     def conn_db(self, db_file):
         # Connect to a database
@@ -52,7 +54,7 @@ class PostBank(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.feedback_ids = [{'id': 0, 'user': None}]
-        self.db_path = '~/.postbank/postbank.db'  # location of the postbank database file.
+        self.db_path = os.path.expanduser('~/.postbank/postbank.db')  # location of the postbank database file.
         self.db = InitDb(self.db_path)  # create the DB if it doesn't exist.
         self.min_length = 140  # Minimum number of characters to be awarded for feedback.
 
