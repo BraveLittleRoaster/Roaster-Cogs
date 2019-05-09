@@ -53,6 +53,19 @@ IF NOT EXISTS postbank (
 class PostBank(commands.Cog):
 
     def __init__(self, bot):
+
+        bank._DEFAULT_GUILD = {
+            "bank_name": "PostBank",
+            "currency": "credits",
+            "default_balance": 0
+        }
+        bank._DEFAULT_GLOBAL = {
+            "is_global": False,
+            "bank_name": "PostBank",
+            "currency": "credits",
+            "default_balance": 0,
+        }
+
         self.bot = bot
         self.feedback_ids = [{'id': 0, 'user': None}]
         self.db_path = os.path.expanduser('~/.postbank/postbank.db')  # location of the postbank database file.
@@ -170,12 +183,10 @@ class PostBank(commands.Cog):
         content = ctx.message.content.split(" ")
         msg = content[1:]  # Get only the message content and ignore the command parameter
         joined_str = (' '.join(str(x) for x in msg))  # mash this into 1 string
-        link = re.search("(?P<url>https?://[^\s]+)", joined_str).group("url")  # Grab only the URL.
+        link = re.search("(?P<url>https?://[^\s]+)", joined_str).group("url")  # Grab only the URL.)
 
-        await self.hasAccount(user)
-
-        canSpend = bank.can_spend(user=user, amount=1)
-        bal = bank.get_balance(user)
+        canSpend = await bank.can_spend(user=user, amount=1)
+        bal = await bank.get_balance(user)
 
         if canSpend is True:
 
@@ -189,7 +200,8 @@ class PostBank(commands.Cog):
                 conn.close()
                 return
 
-            cur.execute('INSERT INTO postbank (userid, link, numreviews, reviewers) VALUES (?,?,0,?);', (user.id, link,
+            cur.execute('INSERT INTO postbank (userid, link, numreviews, reviewers) VALUES (?,?,0,?);', (user.id,
+                                                                                                         str(link),
                                                                                                          '0,1'))
             conn.commit()
 
@@ -198,8 +210,9 @@ class PostBank(commands.Cog):
             feedback_id = rows[0][0]
 
             conn.close()
-            await self.bot.send_message(channel, "{} submitted a track! Use `$feedback {} <feedback post here>` to give them some feedback!".format(user, feedback_id))
-            bank.withdraw_credits(user=user, amount=1)
+            await ctx.send("{} submitted a track! Use `$feedback {} <feedback post here>` to give them some feedback!".format(user, feedback_id))
+
+            await bank.withdraw_credits(user=user, amount=1)
 
         else:
 
@@ -209,7 +222,6 @@ class PostBank(commands.Cog):
     @commands.command(pass_context=True, no_pm=True)
     async def feedback(self, ctx):
         user = ctx.message.author
-        await self.hasAccount(user)
 
         msg = ctx.message.content
         feedback = msg.split(" ")
@@ -287,8 +299,3 @@ class PostBank(commands.Cog):
             conn.close()
 
         conn.close()
-
-
-def setup(bot):
-    n = PostBank(bot)
-    bot.add_cog(n)
