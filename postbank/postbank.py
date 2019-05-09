@@ -54,23 +54,8 @@ IF NOT EXISTS postbank (
 class PostBank(commands.Cog):
 
     def __init__(self, bot):
-
-        _DEFAULT_GLOBAL = {
-            "is_global": False,
-            "bank_name": "PostBank",
-            "currency": "credits",
-            "default_balance": 1,
-        }
-
-        _DEFAULT_GUILD = {
-            "bank_name": "PostBank",
-            "currency": "credits",
-            "default_balance": 1
-        }
-
-        self.config = Config.get_conf(self, identifier=384734293238749)
-        self.config.register_global(**_DEFAULT_GLOBAL)
-        self.config.register_global(**_DEFAULT_GUILD)
+        # Set the default balance to 1.
+        bank.set_default_balance(1)
 
         self.bot = bot
         self.feedback_ids = [{'id': 0, 'user': None}]
