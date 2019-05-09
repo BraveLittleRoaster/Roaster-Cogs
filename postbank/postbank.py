@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 import re
 #from discord.ext import commands
-from redbot.core import commands
-from redbot.core import bank as rb_bank
+from redbot.core import commands, bank
+#from redbot.core import bank as rb_bank
 import sqlite3
 
 
@@ -50,30 +50,17 @@ class PostBank(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.feedback_ids = [{'id': 0, 'user': None}]
-        #self.bank = bot.get_cog('Economy').bank
-        self.bank = rb_bank
         self.db_path = './cogs/postbank.db'  # location of the postbank database file.
         self.db_setup = './cogs/postbank_setup.sql'  # location of the sqlite setup file.
         self.db = InitDb(self.db_path, self.db_setup)  # create the DB if it doesn't exist.
         self.min_length = 140  # Minimum number of characters to be awarded for feedback.
-
-    async def hasAccount(self, user):
-        """Creates the users bank account if it doesn't exist. Everyone starts with one credit."""
-
-        hasAccount = self.bank.account_exists(user)
-        if hasAccount is True:
-            return 0
-        else:
-            self.bank.create_account(user=user, initial_balance=0)
-            return 1
 
     @commands.command(pass_context=True, no_pm=True)
     async def balance(self, ctx):
         """Gets the credit balance of the user who authors the $balance command, and returns it to the chat."""
         user = ctx.message.author
 
-        await self.hasAccount(user)
-        bal = self.bank.get_balance(user)
+        bal = bank.get_balance(user)
 
         await self.bot.send_message(ctx.message.channel, "<@{}>: Your credit balance is: {}".format(user.id, bal))
 
@@ -185,8 +172,8 @@ class PostBank(commands.Cog):
 
         await self.hasAccount(user)
 
-        canSpend = self.bank.can_spend(user=user, amount=1)
-        bal = self.bank.get_balance(user)
+        canSpend = bank.can_spend(user=user, amount=1)
+        bal = bank.get_balance(user)
 
         if canSpend is True:
 
@@ -210,7 +197,7 @@ class PostBank(commands.Cog):
 
             conn.close()
             await self.bot.send_message(channel, "{} submitted a track! Use `$feedback {} <feedback post here>` to give them some feedback!".format(user, feedback_id))
-            self.bank.withdraw_credits(user=user, amount=1)
+            bank.withdraw_credits(user=user, amount=1)
 
         else:
 
@@ -283,7 +270,7 @@ class PostBank(commands.Cog):
 
                     await self.bot.send_message(ctx.message.channel, "<@{}>: You've got feedback!".format(op))
 
-                    self.bank.deposit_credits(user=user, amount=1)
+                    bank.deposit_credits(user=user, amount=1)
 
                     conn.commit()
                     conn.close()
