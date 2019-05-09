@@ -23,7 +23,7 @@ class InitDb(object):
             conn.close()
 
         else:
-            print(e)
+            print("Can't connect to database.")
 
     def conn_db(self, db_file):
         # Connect to a database
