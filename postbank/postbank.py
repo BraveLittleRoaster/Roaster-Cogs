@@ -56,29 +56,20 @@ class PostBank(commands.Cog):
 
     def __init__(self, bot):
 
-        _DEFAULT_GUILD = {
-            "bank_name": "PostBank",
-            "currency": "credits",
-            "default_balance": 1}
-        _DEFAULT_GLOBAL = {
-            "is_global": False,
-            "bank_name": "PostBank",
-            "currency": "credits",
-            "default_balance": 1,
-        }
-
         self.bot = bot
         self.feedback_ids = [{'id': 0, 'user': None}]
         self.db_path = os.path.expanduser('~/.postbank/postbank.db')  # location of the postbank database file.
         self.db = InitDb(self.db_path)  # create the DB if it doesn't exist.
         self.min_length = 140  # Minimum number of characters to be awarded for feedback.
-        self.config = Config.get_conf(self, identifier=384734293238749)
-        self.config.register_global(**_DEFAULT_GLOBAL)
-        self.config.register_guild(**_DEFAULT_GUILD)
+        self.guild = self.bot.guilds[0]
 
-    def default_balance(self, amount):
+        self.bank_setup(0, self.guild)
+
+    @staticmethod
+    def bank_setup(amount, guild):
         loop = asyncio.get_event_loop()
-        loop.run_until_complete(bank.set_default_balance(amount))
+        loop.run_until_complete(bank.set_default_balance(amount, guild))
+        loop.run_until_complete(bank.set_bank_name("PostBank", guild))
 
     @commands.command(pass_context=True, no_pm=True)
     async def balance(self, ctx):
@@ -93,7 +84,7 @@ class PostBank(commands.Cog):
         user = ctx.message.author
         bal = await bank.get_balance(user)
         await bank.set_balance(user, bal + 1)
-        await ctx.send("<@{}>: Your credit balance is: {}".format(user, bal))
+        await ctx.send("<@{}>: Your credit balance is: {}".format(user.id, bal+1))
 
     @commands.command(pass_context=True, no_pm=True)
     async def edit(self, ctx):
