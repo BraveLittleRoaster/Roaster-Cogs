@@ -66,7 +66,7 @@ class PostBank(commands.Cog):
     def default_balance(amount):
 
         loop = asyncio.get_event_loop()
-        loop.run_until_complete(bank.set_default_balance(amount))
+        loop.run_until_complete(bank.set_default_balance(amount, "PostBank"))
 
     @commands.command(pass_context=True, no_pm=True)
     async def balance(self, ctx):
