@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 import re
-#from discord.ext import commands
 from redbot.core import commands, bank
-#from redbot.core import bank as rb_bank
 import sqlite3
 
 
@@ -59,7 +57,6 @@ class PostBank(commands.Cog):
     async def balance(self, ctx):
         """Gets the credit balance of the user who authors the $balance command, and returns it to the chat."""
         user = ctx.message.author
-
         bal = bank.get_balance(user)
 
         await self.bot.send_message(ctx.message.channel, "<@{}>: Your credit balance is: {}".format(user.id, bal))
@@ -89,7 +86,6 @@ class PostBank(commands.Cog):
                 conn.commit()
             except Exception as e:
                 print("Error: {}".format(e))
-
             await self.bot.send_message(ctx.message.channel, "{}: Your link for Posting ID [{}] has been updated".format(user, feedbackid))
 
         else:
