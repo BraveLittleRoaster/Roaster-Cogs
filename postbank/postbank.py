@@ -10,7 +10,8 @@ class InitDb(object):
     def __init__(self, db_file):
 
         try:
-            os.mkdir('~/.postbank')
+            postban_dir = os.path.expanduser('~/.postbank')
+            os.mkdir(postban_dir)
         except FileExistsError as e:
             # Do nothing if the directory exists.
             pass
