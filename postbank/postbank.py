@@ -272,6 +272,7 @@ class PostBank(commands.Cog):
         except IndexError as err:
             await self.bot.delete_message(ctx.message)
             await ctx.send(f"<@{user.id}> Feedback needs an ID number and a message.")
+            return
             
         feedback_len = len(" ".join(feedback_text))
 
@@ -285,13 +286,13 @@ class PostBank(commands.Cog):
 
         try:
             if rows[0][0] == user.id:
-                await self.bot.send_message(ctx.message.channel,
-                                        "<@{}>: You cannot review your own submissions.".format(user.id))
+                await ctx.send(ctx.message.channel, "<@{}>: You cannot review your own submissions.".format(user.id))
                 conn.close()
                 return
         except IndexError as err:
             await self.bot.delete_message(ctx.message)
             await ctx.send(f"<@{user.id}> Feedback needs an ID number and a message.")
+            return
 
         # Build a list to check against.
         cur.execute('SELECT feedbackid FROM postbank')
