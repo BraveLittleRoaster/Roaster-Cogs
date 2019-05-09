@@ -1,12 +1,28 @@
 # -*- coding: utf-8 -*-
 import re
+import os
 from redbot.core import commands, bank
 import sqlite3
 
 
 class InitDb(object):
 
-    def __init__(self, db_file, sql_setup):
+    def __init__(self, db_file):
+
+        try:
+            os.mkdir('~/.postbank')
+        except FileExistsError as e:
+            # Do nothing if the directory exists.
+            pass
+
+        sql_setup = """CREATE TABLE
+IF NOT EXISTS postbank (
+  feedbackid INTEGER PRIMARY KEY AUTOINCREMENT,
+  userid TEXT NOT NULL,
+  link TEXT NOT NULL,
+  numreviews INTEGER,
+  reviewers TEXT NOT NULL
+);"""
 
         try:
             with open(sql_setup, 'r') as f:
@@ -48,9 +64,8 @@ class PostBank(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.feedback_ids = [{'id': 0, 'user': None}]
-        self.db_path = './postbank.db'  # location of the postbank database file.
-        self.db_setup = './postbank_setup.sql'  # location of the sqlite setup file.
-        self.db = InitDb(self.db_path, self.db_setup)  # create the DB if it doesn't exist.
+        self.db_path = '~/.postbank/postbank.db'  # location of the postbank database file.
+        self.db = InitDb(self.db_path)  # create the DB if it doesn't exist.
         self.min_length = 140  # Minimum number of characters to be awarded for feedback.
 
     @commands.command(pass_context=True, no_pm=True)
@@ -59,7 +74,7 @@ class PostBank(commands.Cog):
         user = ctx.message.author
         bal = await bank.get_balance(user)
 
-        await self.bot.send_message(ctx.message.channel, "<@{}>: Your credit balance is: {}".format(user.id, bal))
+        await ctx.send(ctx.message.channel, "<@{}>: Your credit balance is: {}".format(user.id, bal))
 
     @commands.command(pass_context=True, no_pm=True)
     async def edit(self, ctx):
