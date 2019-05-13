@@ -3,7 +3,6 @@ import re
 import os
 from redbot.core import commands, bank, checks
 import sqlite3
-import asyncio
 
 
 class InitDb(object):
@@ -107,8 +106,8 @@ class PostBank(commands.Cog):
 
         await ctx.send("<@{}>: Your credit balance is: {}".format(user.id, bal))
 
-    @commands.command(pass_context=True, no_pm=True, name="update")
-    async def edit(self, ctx):
+    @commands.command(pass_context=True, no_pm=True)
+    async def update(self, ctx):
         """Allows you to edit your posted link. $edit <id> <link>"""
         user = ctx.message.author
         content = ctx.message.content.split(" ")
@@ -171,14 +170,16 @@ class PostBank(commands.Cog):
         await ctx.send("\n".join(recents))
 
     @commands.command(pass_context=True, no_pm=True)
+    @checks.is_owner()
     async def godbal(self, ctx):
-
+        """for debugging"""
         await bank.set_balance(ctx.message.author, 100)
         await ctx.send("Set your balance to 100.")
 
     @commands.command(pass_context=True, no_pm=True)
+    @checks.is_owner()
     async def nukebal(self, ctx):
-
+        """for debugging"""
         await bank.set_balance(ctx.message.author, 0)
         await ctx.send("Set your balance to 0.")
 
@@ -224,7 +225,7 @@ class PostBank(commands.Cog):
         joined_str = (' '.join(str(x) for x in msg))  # mash this into 1 string
         link = re.search("(?P<url>https?://[^\s]+)", joined_str).group("url")  # Grab only the URL.)
 
-        canSpend = await bank.can_spend(user=user, amount=1)
+        canSpend = await bank.can_spend(member=user, amount=1)
         bal = await bank.get_balance(user)
 
         if canSpend is True:
@@ -235,7 +236,7 @@ class PostBank(commands.Cog):
             cur.execute('SELECT * FROM postbank WHERE link=?;', (link,))
 
             if cur.fetchone() is not None:
-                await self.bot.send_message(channel, "<@{}> That link was already submitted.".format(user.id))
+                await ctx.send("<@{}> That link was already submitted.".format(user.id))
                 conn.close()
                 return
 
@@ -254,9 +255,8 @@ class PostBank(commands.Cog):
             await bank.withdraw_credits(user=user, amount=1)
 
         else:
-
-            await ctx.send("{}: Your post was removed because you don't have any credit. Give users $feedback to get credit.".format(user.name, bal))
             await ctx.message.delete()
+            await ctx.send("{}: Your post was removed because you don't have any credit. Give users `$feedback` to get credit.".format(user.name, bal))
 
     @commands.command(pass_context=True, no_pm=True)
     async def feedback(self, ctx):
@@ -285,6 +285,7 @@ class PostBank(commands.Cog):
 
         try:
             if rows[0][0] == user.id:
+                await ctx.message.delete()
                 await ctx.send(ctx.message.channel, "<@{}>: You cannot review your own submissions.".format(user.id))
                 conn.close()
                 return
